@@ -11,8 +11,6 @@ menuIcon.addEventListener("click", () => {
 // Gemini API chat logic
 // ----------------------
 
-const API_KEY = "AIzaSyAL1p6IU9MCktE3wApXaDWL8krpQ4Xq2Fk"; 
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 
 const promptInput = document.getElementById("prompt");
@@ -421,7 +419,7 @@ promptInput.addEventListener("keydown", async (e) => {
       tools: [{ google_search: {} }]
     };
     // console.log("Sending to Gemini API:", JSON.stringify(body));
-    const res = await fetch(API_URL, {
+    const res = await fetch('/api/gemini', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
