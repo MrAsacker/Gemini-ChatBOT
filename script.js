@@ -11,6 +11,7 @@ menuIcon.addEventListener("click", () => {
 // Gemini API chat logic
 // ----------------------
 
+
 const promptInput = document.getElementById("prompt");
 const chatContainer = document.getElementById("chat-container");
 
@@ -59,6 +60,9 @@ async function streamTextToBubble(bubble, text, delay = 30) {
 let conversationHistory = [];
 let chatHistories = JSON.parse(localStorage.getItem('chatHistories') || '{}');
 let currentChatId = localStorage.getItem('currentChatId') || null;
+
+// Initialize global selectedFiles array for file preview logic
+window.selectedFiles = [];
 
 function saveCurrentChatToHistory() {
   // Use first user message or timestamp as title
@@ -266,16 +270,36 @@ fileUploadBtn.addEventListener("click", (e) => {
 
 let lastFilePreviewHTML = "";
 
-fileInput.addEventListener("change", async (e) => {
-  const files = Array.from(e.target.files);
-  console.log("Files selected:", files);
-  if (!files.length) return;
+// Helper to truncate file names
+function truncateFileName(name, maxLength = 18) {
+  if (name.length <= maxLength) return name;
+  const ext = name.includes('.') ? '.' + name.split('.').pop() : '';
+  return name.slice(0, maxLength - ext.length - 3) + '...' + ext;
+}
 
-  let prompt = promptInput.value.trim();
+// Helper to get file parts from selected files
+async function getFilePartsFromSelectedFiles() {
+  const files = window.selectedFiles || [];
+  const fileParts = [];
+  for (const file of files) {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    fileParts.push({ inline_data: { mime_type: file.type || "application/octet-stream", data: base64 } });
+  }
+  return fileParts;
+}
+
+async function renderFilePreview() {
   let fileParts = [];
   let filePreviews = [];
+  const files = window.selectedFiles;
 
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     // Read file as base64 (for all types)
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -285,36 +309,57 @@ fileInput.addEventListener("change", async (e) => {
     });
     fileParts.push({ inline_data: { mime_type: file.type || "application/octet-stream", data: base64 } });
     if (file.type.startsWith("image/")) {
-      filePreviews.push(`<div><b>Image:</b> ${file.name}<br><img src="${window.URL.createObjectURL(file)}" style="max-width:120px;max-height:120px;border-radius:8px;margin:4px 0;" /></div>`);
+      filePreviews.push(
+        `<span class="file-preview-wrapper">
+          <img src="${window.URL.createObjectURL(file)}" alt="preview" class="file-preview-img" />
+          <button class="remove-file-btn" data-index="${i}">&times;</button>
+        </span>`
+      );
     } else {
-      filePreviews.push(`<div><b>File:</b> ${file.name}</div>`);
+      filePreviews.push(
+        `<div class="file-pill">
+          <span class="file-icon">📄</span>${truncateFileName(file.name, 14)}
+          <button class="remove-file-btn" data-index="${i}">&times;</button>
+        </div>`
+      );
     }
   }
-  console.log("File parts to send:", fileParts);
-  // Store preview HTML for next user message
   lastFilePreviewHTML = filePreviews.join("");
-
-  // Store fileParts globally for next message
   window.fileParts = fileParts;
 
-  // Set prompt value
-  promptInput.value = prompt;
-  promptInput.focus();
+  const filePreview = document.getElementById('file-preview');
+  if (filePreview) {
+    filePreview.innerHTML = lastFilePreviewHTML;
 
-  // Auto-send after file upload if any files
-  if (prompt || fileParts.length > 0) {
-    // Simulate Enter key press
-    const event = new KeyboardEvent("keydown", { key: "Enter" });
-    promptInput.dispatchEvent(event);
+    // Add remove button listeners
+    filePreview.querySelectorAll('.remove-file-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
+        window.selectedFiles.splice(idx, 1);
+        renderFilePreview();
+      });
+    });
   }
+}
+
+fileInput.addEventListener("change", async (e) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  // Add new files to the global array
+  window.selectedFiles = window.selectedFiles.concat(files);
+
+  renderFilePreview();
 });
 
 promptInput.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
 
   let prompt = promptInput.value.trim();
-  // Always allow sending if files are present
-  if (!prompt && !(window.fileParts && window.fileParts.length > 0)) return;
+  const fileParts = await getFilePartsFromSelectedFiles();
+  if (!prompt && fileParts.length === 0) return;
 
   // ——— Hide the greeting on first message ———
   removeGreeting();
@@ -329,11 +374,16 @@ promptInput.addEventListener("keydown", async (e) => {
   promptInput.value = "";
   promptInput.disabled = true;
 
+  // Clear the file preview and selected files after sending
+  const filePreview = document.getElementById('file-preview');
+  if (filePreview) filePreview.innerHTML = '';
+  window.selectedFiles = [];
+
   // Add user message to conversation history
   let userParts = [];
   if (prompt) userParts.push({ text: prompt });
-  if (window.fileParts && window.fileParts.length > 0) {
-    userParts = userParts.concat(window.fileParts);
+  if (fileParts.length > 0) {
+    userParts = userParts.concat(fileParts);
   }
   conversationHistory.push({ role: 'user', parts: userParts });
 
@@ -341,23 +391,34 @@ promptInput.addEventListener("keydown", async (e) => {
   const thinkingBubble = addMessage("Thinking...", "bot", true);
 
   try {
-    // 3) fetch from Gemini
     // Always send full conversation history for context
+    const userName = localStorage.getItem('userName');
+    let conversationToSend = conversationHistory;
+    if (userName && userName.trim()) {
+      const systemPrompt = {
+        role: 'user',
+        parts: [{
+          text: `Always refer to me as \"${userName}\". Do not use any other name or phrase to refer to me. Do not say you do not know my name. If you need to address me, use only \"${userName}\".`
+        }]
+      };
+      conversationToSend = [systemPrompt, ...conversationHistory];
+    }
     const body = {
-      contents: conversationHistory,
+      contents: conversationToSend,
       tools: [{ google_search: {} }]
     };
-    console.log("Sending to Gemini API:", JSON.stringify(body));
-    const res = await fetch('/api/gemini', {
+    // console.log("Sending to Gemini API:", JSON.stringify(body));
+    const res = await fetch(/api/gemini, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     const data = await res.json();
+    // console.log("Gemini API full response:", data);
     // 4) extract the reply
     const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
+      data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('')?.trim() ||
       data?.error?.message ||
       "No response received.";
 
@@ -469,4 +530,136 @@ if (micBtn) {
 const style = document.createElement('style');
 style.innerHTML = `.mic-icon-btn.listening { background: #2a7fff !important; }`;
 document.head.appendChild(style);
+
+function updateUpgradeButtonName() {
+  const upgradeBtn = document.getElementById('upgrade');
+  const userName = localStorage.getItem('userName');
+  if (upgradeBtn) {
+    upgradeBtn.textContent = userName && userName.trim() ? userName : 'Set Name';
+  }
+}
+window.addEventListener('DOMContentLoaded', () => {
+  updateUpgradeButtonName();
+  updateGreeting();
+});
+
+function updateGreeting() {
+  const userName = localStorage.getItem('userName') || 'Mitra';
+  const greetingDiv = document.querySelector('.greeting');
+  if (greetingDiv) {
+    greetingDiv.innerHTML = `
+      <span class="gradient-text">Hello, ${userName}</span>
+      <p>How can I help you today?</p>
+    `;
+  }
+}
+
+// Get elements
+const anyaLogo = document.getElementById('anya-logo');
+const nameDropdown = document.getElementById('name-dropdown');
+const nameInput = document.getElementById('name-input');
+const saveNameBtn = document.getElementById('save-name-btn');
+const clearNameBtn = document.getElementById('clear-name-btn');
+const clearAllChatsBtn = document.getElementById('clear-all-chats');
+const upgradeBtn = document.getElementById('upgrade');
+
+// Show dropdown on Anya logo or upgrade button click
+function showNameDropdown() {
+  if (!(anyaLogo && nameDropdown && nameInput)) return;
+  const rect = (anyaLogo || upgradeBtn).getBoundingClientRect();
+  nameDropdown.style.display = 'block';
+  let top = rect.bottom + 8;
+  let left = rect.left;
+  // Adjust for screen edges
+  nameDropdown.style.visibility = 'hidden';
+  nameDropdown.style.left = '0px';
+  nameDropdown.style.top = '0px';
+  const dropdownRect = nameDropdown.getBoundingClientRect();
+  nameDropdown.style.visibility = 'visible';
+  if (left + dropdownRect.width > window.innerWidth) {
+    left = window.innerWidth - dropdownRect.width - 10;
+  }
+  if (top + dropdownRect.height > window.innerHeight) {
+    top = rect.top - dropdownRect.height - 8;
+    if (top < 0) top = 10;
+  }
+  nameDropdown.style.top = `${top}px`;
+  nameDropdown.style.left = `${left}px`;
+  // Set input value to current name
+  nameInput.value = localStorage.getItem('userName') || '';
+  nameInput.focus();
+}
+
+if (anyaLogo && nameDropdown && nameInput) {
+  anyaLogo.addEventListener('click', showNameDropdown);
+}
+if (upgradeBtn && nameDropdown && nameInput) {
+  upgradeBtn.addEventListener('click', showNameDropdown);
+}
+// Hide dropdown when clicking outside
+document.addEventListener('click', function hideDropdown(e) {
+  if (nameDropdown.style.display === 'block' && !nameDropdown.contains(e.target) && e.target !== anyaLogo && e.target !== upgradeBtn) {
+    nameDropdown.style.display = 'none';
+  }
+});
+
+// Save name
+if (saveNameBtn && nameInput && nameDropdown) {
+  saveNameBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    if (name) {
+      localStorage.setItem('userName', name);
+      updateGreeting();
+      updateUpgradeButtonName();
+      nameDropdown.style.display = 'none';
+    }
+  });
+}
+
+// Clear name
+if (clearNameBtn && nameDropdown) {
+  clearNameBtn.addEventListener('click', () => {
+    localStorage.removeItem('userName');
+    updateGreeting();
+    updateUpgradeButtonName();
+    nameDropdown.style.display = 'none';
+  });
+}
+
+// Save name on Enter key
+if (nameInput && nameDropdown) {
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const name = nameInput.value.trim();
+      if (name) {
+        localStorage.setItem('userName', name);
+        updateGreeting();
+        updateUpgradeButtonName();
+        nameDropdown.style.display = 'none';
+      }
+    }
+  });
+}
+
+if (clearAllChatsBtn) {
+  clearAllChatsBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to delete all chats? This cannot be undone.')) {
+      localStorage.removeItem('chatHistories');
+      localStorage.removeItem('currentChatId');
+      chatHistories = {};
+      conversationHistory = [];
+      currentChatId = null;
+      chatContainer.innerHTML = '';
+      // Show greeting if present and hide chat container
+      let greetingDiv = document.querySelector('.greeting');
+      if (greetingDiv) greetingDiv.style.display = '';
+      chatContainer.style.display = 'none';
+      renderRecentChats();
+      const filePreview = document.getElementById('file-preview');
+      if (filePreview) filePreview.innerHTML = '';
+      window.selectedFiles = [];
+    }
+  });
+}
 
