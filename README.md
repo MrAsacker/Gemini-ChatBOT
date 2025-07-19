@@ -1,17 +1,29 @@
 # Gemini Chatbot
 
-A modern, interactive chatbot web application powered by Google Gemini API. This project features a sleek UI, persistent chat history, file uploads, and voice input, all running securely with a serverless backend to protect your API key.
+Welcome to **Gemini Chatbot** – a modern, interactive AI chat experience designed for productivity, learning, and fun! Enjoy seamless conversations, persistent history, file and image sharing, voice input, and a beautiful, responsive interface.
 
 ---
 
-## ✨ Features
+## 🌟 Features
 
-- **Conversational AI**: Chat with Gemini, powered by Google’s Gemini API.
-- **Secure API Key**: Gemini API key is hidden using a Vercel serverless function (api/gemini.js). The frontend fetches /api/gemini, and the backend uses the API key from environment variables. The key is never exposed to the browser.
-- **Persistent Chat History**: Chats are saved in your browser and can be renamed, pinned, or deleted.
-- **File Uploads**: Send images and files to the chatbot.
-- **Voice Input**: Use your microphone to send messages.
-- **Responsive UI**: Works on desktop and mobile.
+- **Conversational AI**
+  - Chat with Gemini, an advanced AI assistant, for answers, explanations, brainstorming, and more.
+- **Persistent Chat History**
+  - Your conversations are saved in your browser. Access, rename, pin, or delete recent chats anytime.
+- **File & Image Uploads**
+  - Easily send images and files to the chatbot. Preview and remove files before sending for full control.
+- **Voice Input**
+  - Use your microphone to send messages hands-free.
+- **Modern, Responsive UI**
+  - Enjoy a clean, intuitive design that works on desktop and mobile.
+- **Quick New Chat**
+  - Start a fresh conversation with a single click.
+- **Recent Chats Management**
+  - Pin important chats, rename them for easy reference, or delete when no longer needed.
+- **Personalized Greeting**
+  - Set your name for a friendly, personalized welcome every time you visit.
+- **Clear All Chats**
+  - Instantly clear your entire chat history with one click.
 
 ---
 
@@ -42,64 +54,70 @@ npm i -g vercel
 vercel dev
 ```
 
-**Important:**
-- The frontend fetches `/api/gemini` (not the Gemini API directly).
-- The backend function (`api/gemini.js`) reads your Gemini API key from environment variables and proxies the request to Gemini.
-- Never put your Gemini API key in frontend code.
+---
 
-**File/Image Upload:**
-- You can upload files and images. You can remove any selected file/image before sending using the (X) button in the preview bar.
-- The preview bar is compact and modern, and images are not sent until you press Enter or click Send.
+## 💬 How to Use
 
-**Deep Research Button:**
-- The Deep Research button is now just a UI element and does not affect the prompt or API call.
+1. **Start Chatting**
+   - Type your message in the input box and press Enter, or use the microphone button for voice input.
+2. **Send Files or Images**
+   - Click the + icon to select files or images. Preview them above the input area. Remove any before sending if needed.
+3. **Manage Chats**
+   - Access recent chats in the sidebar. Pin, rename, or delete as you wish. Click "Clear All Chats" to start fresh.
+4. **Personalize Your Experience**
+   - Click the avatar or "Set Name" to enter your name for a personalized greeting.
+5. **Start a New Chat**
+   - Click "New Chat" to begin a new conversation at any time.
 
 ---
 
-## 🛡️ Hiding Your API Key
-- **Never** put your Gemini API key in frontend code.
-- The key is stored as an environment variable and only used in `api/gemini.js`.
+## 🗂️ Chat Management
+- **Recent Chats:**
+  - All your conversations are listed in the sidebar for easy access.
+  - Pin important chats to keep them at the top.
+  - Rename chats for better organization.
+  - Delete chats you no longer need.
+- **Clear All:**
+  - Use the "Clear All Chats" button to remove all chat history instantly.
 
 ---
 
-## 🛠️ Deployment (Vercel)
-
-1. **Push your code to GitHub.**
-2. **Go to [Vercel](https://vercel.com/)** and import your repo.
-3. **Set Environment Variable:**
-   - Name: `GEMINI_API_KEY`
-   - Value: _your Gemini API key_
-4. **Deploy!**
+## 📎 File & Image Upload
+- Click the + icon to select files or images.
+- See a compact preview above the input area.
+- Remove any file/image before sending using the (X) button.
+- Files and images are sent only when you press Enter or click Send.
 
 ---
 
-## 💬 Usage
-- Open the deployed site.
-- Type or speak your message.
-- Upload files if needed.
-- View, rename, pin, or delete chat history.
+## 🎤 Voice Input
+- Click the microphone button to start voice input.
+- Speak your message and it will appear in the input box, ready to send.
 
 ---
 
-## 📁 Customization
-- Edit `style.css` for UI changes.
-- Update `script.js` for frontend logic.
-- Extend `api/gemini.js` for more backend features.
+## 🎨 Personalization
+- Set your name for a custom greeting and a more personal chat experience.
+- The chatbot will greet you by name every time you visit.
 
 ---
 
-## 🤝 Contributing
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+## ⚡ How It Works
+- Type or speak your message, or upload files/images.
+- The chatbot responds in real time, with code and markdown formatting supported.
+- All your chats are saved locally for privacy and convenience.
+- You can manage, pin, rename, or delete chats as you like.
 
 ---
 
-## 📄 License
-[MIT](LICENSE)
+## 📱 Screenshots
+*Add screenshots here to showcase the UI and features.*
 
 ---
 
-## 🙏 Acknowledgements
-- [Google Gemini API](https://ai.google.dev/)
-- [Vercel](https://vercel.com/)
-- [Marked.js](https://marked.js.org/) for Markdown rendering
-- [highlight.js](https://highlightjs.org/) for code highlighting 
+## 📝 License
+MIT
+
+---
+
+Enjoy chatting with Gemini! If you have feedback or want to contribute, feel free to open an issue or pull request. 
