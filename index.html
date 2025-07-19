@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
+    <!-- Marked for Markdown parsing -->
     <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-   
+    <!-- Highlight.js for syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
+    <!-- Official Google Generative AI SDK -->
     <script defer src="https://unpkg.com/@google/generative-ai"></script>
-    
+    <!-- Your script logic -->
     <script defer src="script.js"></script>
     <link rel="stylesheet" href="style.css" />
 
@@ -48,7 +48,7 @@
                     </p>
                 </div>
             </div>
-            <button id="clear-all-chats" style="margin: 12px 0 0 12px; padding: 6px 16px; background: #f44; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">Clear All Chats</button>
+            <button id="clear-all-chats" style="margin: 16px 0 0 0; padding: 8px 16px; background: #f44; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%;">Clear All Chats</button>
         </div>
         <div class="sidebar-footer">
             <div class="settings">
@@ -71,9 +71,18 @@
                 <div class="upgrade-btn">
                     <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_red_4ed1cbfcbc6c9e84c31b987da73fc4168aec8445.svg"
                         alt="Upgrade" />
-                    <span id="upgrade">Name</span>
+                    <span id="upgrade">Upgrade</span>
                 </div>
-                <img class="user-avatar" src="assets/anya.jpeg" id="anya-logo" alt="Anya" style="cursor:pointer;" />
+                <!-- Anya Icon -->
+                <img id="anya-logo" class="user-avatar" src="assets/anya.jpeg" alt="Anya" />
+
+                <!-- Name Dropdown (initially hidden) -->
+                <div id="name-dropdown" style="display:none; position:fixed; background:#23272f; color:#fff; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.4); min-width:170px; max-width:220px; z-index:1000; padding:12px;">
+                  <label for="name-input" style="font-size:14px; color:#fff;">Enter your name:</label>
+                  <input type="text" id="name-input" style="margin:8px 0 10px 0; width:100%; background:#181a20; color:#fff; border:1px solid #444; border-radius:5px; padding:5px 8px; font-size:14px;" />
+                  <button id="save-name-btn" style="width:100%; background:#2a7fff; color:#fff; border:none; border-radius:5px; padding:6px 0; font-size:14px; cursor:pointer;">Save</button>
+                  <button id="clear-name-btn" style="width:100%; background:#444; color:#fff; border:none; border-radius:5px; padding:6px 0; font-size:14px; cursor:pointer; margin-top:6px;">Clear Name</button>
+                </div>
             </div>
         </nav>
 
@@ -88,8 +97,8 @@
             </div>
         </div>
 
+        <div id="file-preview"></div>
         <div class="input-area">
-            <div id="file-preview" style="margin: 8px 0 0 0;"></div>
             <div class="input-container">
                 <div class="input-main-area">
                     <input type="text" placeholder="Ask Gemini" class="input-field" id="prompt" />
@@ -98,7 +107,7 @@
                             <img id="plus_icon" src="assets/add_icon.png" alt="add files icon" />
                         </button>
                         <input type="file" id="file-input" style="display:none" accept=".txt,.js,.json,.md,.py,.java,.c,.cpp,.ts,.html,.css,image/*" multiple />
-                        <button class="action-btn" id="deep-research-btn">
+                        <button class="action-btn">
                             <img src="assets/travel_explore.png" alt="Deep Research" />
                             <span>Deep Research</span>
                         </button>
@@ -118,12 +127,6 @@
                 Gemini may display inaccurate info, so double-check its responses.
             </p>
         </div>
-    </div>
-    <div id="name-dropdown" style="display:none; position:fixed; background:#23272f; color:#fff; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.4); min-width:170px; max-width:220px; z-index:1000; padding:12px 12px 10px 12px;">
-      <label for="name-input" style="font-size:14px; color:#fff;">Enter your name:</label>
-      <input type="text" id="name-input" style="margin:8px 0 10px 0; width:100%; background:#181a20; color:#fff; border:1px solid #444; border-radius:5px; padding:5px 8px; font-size:14px;" />
-      <button id="save-name-btn" style="width:100%; background:#2a7fff; color:#fff; border:none; border-radius:5px; padding:6px 0; font-size:14px; cursor:pointer;">Save</button>
-      <button id="clear-name-btn" style="width:100%; background:#444; color:#fff; border:none; border-radius:5px; padding:6px 0; font-size:14px; cursor:pointer; margin-top:6px;">Clear Name</button>
     </div>
 </body>
 
