@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Marked for Markdown parsing -->
+    <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Official Google Generative AI SDK -->
+    <script defer src="https://unpkg.com/@google/generative-ai"></script>
+    <!-- Your script logic -->
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="style.css" />
+
+
+    <title>Gemini ChatBot</title>
+</head>
+
+<body>
+    <div class="sidebar collapsed">
+        <div class="sidebar-top">
+            <div class="menu-icon-div">
+                <span id="menu-icon" class="icon-btn"><img src="assets/menu_icon.png" alt="menu_icon" /></span>
+            </div>
+            <div class="new-chat">
+                <span><img id="add-icon-btn" src="assets/edit_square.png" alt="new chat add icon" /></span>
+                <span id="new-chat-text">New chat</span>
+            </div>
+            <div class="recent">
+                <p class="recent-title">Recent</p>
+                <div class="recent-history">
+                    <p class="recent-item">
+                        <span>What is quantum computing?</span>
+                        <img src="assets/more_vert.png" alt="more options" />
+                    </p>
+                    <p class="recent-item">
+                        <span>Plan a trip to the mountains</span>
+                        <img src="assets/more_vert.png" alt="more options" />
+                    </p>
+                    <p class="recent-item">
+                        <span>Explain the theory of relativity</span>
+                        <img src="assets/more_vert.png" alt="more options" />
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="settings">
+                <span class="settings-icon-btn"><img src="assets/settings_icon_filled.png" alt="settings icon" /></span>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <nav class="top-navbar">
+            <div class="nav-left">
+                <span class="logo-text">Gemini</span>
+                <div class="dropdown">
+                    <span class="version-text">2.5 Flash</span>
+                    <img id="drop_icon" src="assets/arrow_drop_down_icon.png" alt="Dropdown Icon" />
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="upgrade-btn">
+                    <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_red_4ed1cbfcbc6c9e84c31b987da73fc4168aec8445.svg"
+                        alt="Upgrade" />
+                    <span id="upgrade">Upgrade</span>
+                </div>
+                <img class="user-avatar" src="assets/anya.jpeg" alt="User Avatar" />
+            </div>
+        </nav>
+
+        <div class="chat-area">
+            <div class="greeting">
+                <span class="gradient-text">Hello, Asacker</span>
+                <p>How can I help you today?</p>
+            </div>
+            <!-- Chat container for messages -->
+            <div id="chat-container" class="chat-container">
+                <!-- Messages will be appended here -->
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <div class="input-main-area">
+                    <input type="text" placeholder="Ask Gemini" class="input-field" id="prompt" />
+                    <div class="input-actions">
+                        <button class="action-btn" id="file-upload-btn">
+                            <img id="plus_icon" src="assets/add_icon.png" alt="add files icon" />
+                        </button>
+                        <input type="file" id="file-input" style="display:none" accept=".txt,.js,.json,.md,.py,.java,.c,.cpp,.ts,.html,.css,image/*" multiple />
+                        <button class="action-btn">
+                            <img src="assets/travel_explore.png" alt="Deep Research" />
+                            <span>Deep Research</span>
+                        </button>
+                        <button class="action-btn">
+                            <img src="assets/note_stack_add.png" alt="Canvas" />
+                            <span>Canvas</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-mic-button">
+                    <button class="mic-icon-btn">
+                        <span class="material-symbols-outlined mic">mic</span>
+                    </button>
+                </div>
+            </div>
+            <p class="footer-text">
+                Gemini may display inaccurate info, so double-check its responses.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
