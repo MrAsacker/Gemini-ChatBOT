@@ -7,7 +7,7 @@ A modern, interactive chatbot web application powered by Google Gemini API. This
 ## ✨ Features
 
 - **Conversational AI**: Chat with Gemini, powered by Google’s Gemini API.
-- **Secure API Key**: API key is hidden using a Vercel serverless function.
+- **Secure API Key**: Gemini API key is hidden using a Vercel serverless function (api/gemini.js). The frontend fetches /api/gemini, and the backend uses the API key from environment variables. The key is never exposed to the browser.
 - **Persistent Chat History**: Chats are saved in your browser and can be renamed, pinned, or deleted.
 - **File Uploads**: Send images and files to the chatbot.
 - **Voice Input**: Use your microphone to send messages.
@@ -41,6 +41,18 @@ You can use [Vercel CLI](https://vercel.com/docs/cli) to run locally:
 npm i -g vercel
 vercel dev
 ```
+
+**Important:**
+- The frontend fetches `/api/gemini` (not the Gemini API directly).
+- The backend function (`api/gemini.js`) reads your Gemini API key from environment variables and proxies the request to Gemini.
+- Never put your Gemini API key in frontend code.
+
+**File/Image Upload:**
+- You can upload files and images. You can remove any selected file/image before sending using the (X) button in the preview bar.
+- The preview bar is compact and modern, and images are not sent until you press Enter or click Send.
+
+**Deep Research Button:**
+- The Deep Research button is now just a UI element and does not affect the prompt or API call.
 
 ---
 
