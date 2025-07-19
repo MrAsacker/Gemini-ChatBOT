@@ -11,6 +11,9 @@ menuIcon.addEventListener("click", () => {
 // Gemini API chat logic
 // ----------------------
 
+const API_KEY = "AIzaSyAL1p6IU9MCktE3wApXaDWL8krpQ4Xq2Fk"; 
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
 
 const promptInput = document.getElementById("prompt");
 const chatContainer = document.getElementById("chat-container");
@@ -156,6 +159,16 @@ function renderRecentChats() {
       localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
       renderRecentChats();
       menu.classList.remove('active');
+      // If the deleted chat is the current chat, reset to new chat
+      if (id === currentChatId) {
+        conversationHistory = [];
+        currentChatId = null;
+        localStorage.removeItem('currentChatId');
+        chatContainer.innerHTML = '';
+        chatContainer.style.display = 'none';
+        let greetingDiv = document.querySelector('.greeting');
+        if (greetingDiv) greetingDiv.style.display = '';
+      }
     };
     recentDiv.appendChild(p);
   });
@@ -408,7 +421,7 @@ promptInput.addEventListener("keydown", async (e) => {
       tools: [{ google_search: {} }]
     };
     // console.log("Sending to Gemini API:", JSON.stringify(body));
-    const res = await fetch(/api/gemini, {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
