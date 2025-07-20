@@ -112,6 +112,10 @@ vercel dev
 
 ## 📱 Screenshots
 *Add screenshots here to showcase the UI and features.*
+<img width="1920" height="1088" alt="Screenshot 2025-07-20 230616" src="https://github.com/user-attachments/assets/9379f6e2-2027-49a0-9691-3410b1519b42" />
+<img width="1920" height="1091" alt="Screenshot 2025-07-20 230529" src="https://github.com/user-attachments/assets/490937c1-3472-4ae5-bd24-2971ad9cf8d7" />
+
+
 
 ---
 
